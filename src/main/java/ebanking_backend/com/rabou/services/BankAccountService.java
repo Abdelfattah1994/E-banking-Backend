@@ -2,7 +2,9 @@ package ebanking_backend.com.rabou.services;
 
 import java.util.List;
 
+import ebanking_backend.com.rabou.dtos.AccountOperationDTO;
 import ebanking_backend.com.rabou.dtos.BankAccountDTO;
+import ebanking_backend.com.rabou.dtos.BankAccountHistory;
 import ebanking_backend.com.rabou.dtos.CurrentBankAccountDTO;
 import ebanking_backend.com.rabou.dtos.CustomerDTO;
 import ebanking_backend.com.rabou.dtos.SavingBankAccountDTO;
@@ -25,4 +27,7 @@ public interface BankAccountService {
 	CustomerDTO getCustomer(Long customerId) throws CustomerNotFoundException;
 	CustomerDTO updateCustomer(CustomerDTO customerDTO);
 	void deleteCustomer(Long CustomerId);
+	List<AccountOperationDTO> accountHistory(String accountId);
+	BankAccountHistory bankAccountHistory(String accountId, int page, int size) throws BankAccountNotFoundException;
+	List<CustomerDTO> searchCustomers(String keyword);
 }

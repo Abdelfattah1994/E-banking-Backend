@@ -3,18 +3,20 @@ package ebanking_backend.com.rabou.web;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import ebanking_backend.com.rabou.dtos.CustomerDTO;
 import ebanking_backend.com.rabou.exceptions.CustomerNotFoundException;
 import ebanking_backend.com.rabou.services.BankAccountServiceImpl;
-
+@CrossOrigin
 @RestController
 public class CustomerRestController {
 
@@ -42,5 +44,9 @@ public class CustomerRestController {
 	@DeleteMapping("/customers/{customerId}")
 	public void deleteCustomer(@PathVariable Long customerId){
 		bankAccountServiceImpl.deleteCustomer(customerId);
+	}
+	@GetMapping("/customers/search")
+	public List<CustomerDTO> searchCustomer(@RequestParam(name="keyword", defaultValue="") String keyword){
+		return bankAccountServiceImpl.searchCustomers("%"+keyword+"%");
 	}
 }

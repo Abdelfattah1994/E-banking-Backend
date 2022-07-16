@@ -3,9 +3,11 @@ package ebanking_backend.com.rabou.mappers;
 import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
 
+import ebanking_backend.com.rabou.dtos.AccountOperationDTO;
 import ebanking_backend.com.rabou.dtos.CurrentBankAccountDTO;
 import ebanking_backend.com.rabou.dtos.CustomerDTO;
 import ebanking_backend.com.rabou.dtos.SavingBankAccountDTO;
+import ebanking_backend.com.rabou.entities.AccountOperation;
 import ebanking_backend.com.rabou.entities.CurrentAccount;
 import ebanking_backend.com.rabou.entities.Customer;
 import ebanking_backend.com.rabou.entities.SavingAccount;
@@ -29,6 +31,7 @@ public class BankAccountMapperImpl {
 		SavingBankAccountDTO savingBankAccountDTO = new SavingBankAccountDTO();
 		BeanUtils.copyProperties(savingBankAccount, savingBankAccountDTO);
 		savingBankAccountDTO.setCustomerDTO(fromCustomer(savingBankAccount.getCustomer()));
+		savingBankAccountDTO.setType(savingBankAccount.getClass().getSimpleName());
 		return savingBankAccountDTO;
 	}
 	public SavingAccount fromSavingBankAccountDTO(SavingBankAccountDTO savingBankAccountDTO) {
@@ -41,6 +44,7 @@ public class BankAccountMapperImpl {
 		CurrentBankAccountDTO currentBankAccountDTO = new CurrentBankAccountDTO();
 		BeanUtils.copyProperties(currentBankAccount, currentBankAccountDTO);
 		currentBankAccountDTO.setCustomerDTO(fromCustomer(currentBankAccount.getCustomer()));
+		currentBankAccountDTO.setType(currentBankAccount.getClass().getSimpleName());
 		return currentBankAccountDTO;
 	}
 	public CurrentAccount fromCurrentBankAccountDTO(CurrentBankAccountDTO currentBankAccountDTO) {
@@ -48,5 +52,11 @@ public class BankAccountMapperImpl {
 		BeanUtils.copyProperties(currentBankAccountDTO, currentBankAccount);
 		currentBankAccount.setCustomer(fromCustomerDTO(currentBankAccountDTO.getCustomerDTO()));
 		return currentBankAccount;
+	}
+	
+	public AccountOperationDTO fromAccountOperation(AccountOperation accountOperation) {
+		AccountOperationDTO accountOperationDTO = new AccountOperationDTO();
+		BeanUtils.copyProperties(accountOperation, accountOperationDTO);
+		return accountOperationDTO;
 	}
 }

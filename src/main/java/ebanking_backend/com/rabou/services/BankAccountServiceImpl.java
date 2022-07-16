@@ -1,5 +1,6 @@
 package ebanking_backend.com.rabou.services;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.UUID;
@@ -7,10 +8,14 @@ import java.util.stream.Collectors;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import ebanking_backend.com.rabou.dtos.AccountOperationDTO;
 import ebanking_backend.com.rabou.dtos.BankAccountDTO;
+import ebanking_backend.com.rabou.dtos.BankAccountHistory;
 import ebanking_backend.com.rabou.dtos.CurrentBankAccountDTO;
 import ebanking_backend.com.rabou.dtos.CustomerDTO;
 import ebanking_backend.com.rabou.dtos.SavingBankAccountDTO;
@@ -182,6 +187,40 @@ public class BankAccountServiceImpl implements BankAccountService{
 		Customer customer = customerRepository.findById(customerId)
 				.orElseThrow(()->new CustomerNotFoundException("Customer not Found !"));
 		return dtoMapper.fromCustomer(customer);
+	}
+	
+	@Override
+	public List<AccountOperationDTO> accountHistory(String accountId){
+		List<AccountOperation> accountOperations = accountOperationRepository.findByBankAccountId(accountId);
+		return accountOperations.stream().map(operation ->{
+			return dtoMapper.fromAccountOperation(operation);
+		}).collect(Collectors.toList());
+		
+	}
+	@Override
+	public BankAccountHistory bankAccountHistory(String accountId, int page, int size) throws BankAccountNotFoundException {
+		BankAccountHistory bankAccountHistory = new BankAccountHistory();
+		BankAccount bankAccount = bankAccountRepository.findById(accountId).orElse(null);
+		if (bankAccount == null) throw new BankAccountNotFoundException("account not found");
+		Page<AccountOperation> pageOperations = accountOperationRepository.findByBankAccountId(accountId, PageRequest.of(page, size));
+		List<AccountOperationDTO> pageOperationsDTO = new ArrayList<AccountOperationDTO>();
+		for(AccountOperation op : pageOperations) {
+			pageOperationsDTO.add(dtoMapper.fromAccountOperation(op));
+		}
+		bankAccountHistory.setAccountOperations(pageOperationsDTO);
+		bankAccountHistory.setBalance(bankAccount.getBalance());
+		bankAccountHistory.setId(bankAccount.getId());
+		bankAccountHistory.setPage(page);
+		bankAccountHistory.setSize(size);
+		bankAccountHistory.setTotalePages(pageOperations.getTotalPages());
+		return bankAccountHistory;
+		}
+
+	@Override
+	public List<CustomerDTO> searchCustomers(String keyword) {
+		List<Customer> customerList = customerRepository.searchCustomer(keyword);
+		List<CustomerDTO> customerDTOList = customerList.stream().map(customer -> dtoMapper.fromCustomer(customer)).collect(Collectors.toList());
+		return customerDTOList;
 	}
 	
 }
